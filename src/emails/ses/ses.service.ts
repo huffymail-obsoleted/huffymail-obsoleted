@@ -1,48 +1,54 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Message } from '@aws-sdk/client-sqs'
+import { ParsedMail, simpleParser } from 'mailparser'
 import { get } from 'lodash'
-import { simpleParser } from 'mailparser'
 
 import { S3Service } from './s3/s3.service'
 
-declare type ParseMessageResult = {
+declare type ParsedMessage = {
   messageId: string
   from: string
   to: string
   spamVerdict: boolean
   virusVerdict: boolean
-  content: {
-    html: any | string
-    subject: any | string
-    date: any | string
-  }
+  subject: string | undefined
+  html: string
+  date: Date | undefined
 }
 
 @Injectable()
 export class SesService {
+  private readonly logger = new Logger(SesService.name)
+
   constructor(
     private configService: ConfigService,
     private s3Service: S3Service,
   ) {}
 
   public async handleMessage(message: Message): Promise<void> {
+    await this.parseMessage(message)
+
+    this.logger.log(`handle message successfully: ${message.MessageId}`)
+
+    return
+  }
+
+  public async parseMessage(message: Message): Promise<ParsedMessage | undefined> {
     const bodyAsString = message.Body
     if (bodyAsString === undefined) {
       throw new Error('bodyAsString is undefined')
     }
 
-    const result = await this.parseMessage(bodyAsString)
-    if (result === undefined) {
-      throw new Error('result is undefined')
+    const body = await this.parseMessageBody(bodyAsString)
+    if (body === undefined) {
+      throw new Error('body is undefined')
     }
 
-    console.log(result)
-
-    return
+    return body
   }
 
-  public async parseMessage(bodyAsString: string): Promise<ParseMessageResult | undefined> {
+  public async parseMessageBody(bodyAsString: string): Promise<ParsedMessage | undefined> {
     const body = JSON.parse(bodyAsString)
 
     const messageAsString = body.Message
@@ -52,12 +58,15 @@ export class SesService {
 
     const message = JSON.parse(messageAsString)
 
-    const objectAsString = await this.s3Service.getObjectAsString(message.mail?.messageId)
-    if (objectAsString === undefined) {
-      throw new Error('object is undefined')
+    const mailAsString = await this.s3Service.getObjectAsString(message.mail?.messageId)
+    if (mailAsString === undefined) {
+      throw new Error('getObjectAsString returns undefined')
     }
 
-    const object = await simpleParser(objectAsString)
+    const mail = await this.parseMail(mailAsString)
+    if (mail === undefined) {
+      throw new Error('parseMail returns undefined')
+    }
 
     return {
       messageId: get(message, 'mail.messageId'),
@@ -65,11 +74,18 @@ export class SesService {
       to: get(message, 'mail.destination.0'),
       spamVerdict: get(message, 'receipt.spamVerdict.status') === 'PASS',
       virusVerdict: get(message, 'receipt.virusVerdict.status') === 'PASS',
-      content: {
-        html: get(object, 'html'),
-        subject: get(object, 'subject'),
-        date: get(object, 'date')
-      }
+      subject: mail.subject,
+      html: mail.html as string,
+      date: mail.date
     }
+  }
+
+  public async parseMail(asString: string): Promise<ParsedMail | undefined> {
+    const parsedMail = await simpleParser(asString)
+    if (parsedMail.html === false) {
+      return undefined
+    }
+
+    return parsedMail
   }
 }
