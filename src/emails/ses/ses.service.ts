@@ -5,6 +5,7 @@ import { ParsedMail, simpleParser } from 'mailparser'
 import { get } from 'lodash'
 
 import { S3Service } from './s3/s3.service'
+import { EmailsService } from '../emails.service'
 
 declare type ParsedMessage = {
   messageId: string
@@ -23,11 +24,22 @@ export class SesService {
 
   constructor(
     private configService: ConfigService,
+    private emailsService: EmailsService,
     private s3Service: S3Service,
   ) {}
 
   public async handleMessage(message: Message): Promise<void> {
-    await this.parseMessage(message)
+    const parsedMessage = await this.parseMessage(message)
+
+    await this.emailsService.create({
+      messageId: parsedMessage.messageId,
+      from: parsedMessage.from,
+      to: parsedMessage.to,
+      spamVerdict: parsedMessage.spamVerdict,
+      virusVerdict: parsedMessage.virusVerdict,
+      subject: parsedMessage.subject,
+      html: parsedMessage.html
+    })
 
     this.logger.log(`handle message successfully: ${message.MessageId}`)
 
