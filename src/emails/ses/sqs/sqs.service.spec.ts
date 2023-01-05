@@ -1,23 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { SesService } from './ses.service'
+import { SqsService } from './sqs.service'
 import { ConfigModule } from '@nestjs/config'
-import { S3Service } from './s3/s3.service'
 
-describe('SesService', () => {
-  let service: SesService
-  let s3Service: S3Service
+import { SesService } from '../ses.service'
+import { S3Service } from '../s3/s3.service'
+
+describe('SqsService', () => {
+  let service: SqsService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [ConfigModule],
       providers: [
+        SqsService,
         SesService,
-        S3Service
+        S3Service,
       ],
     }).compile()
 
-    service = module.get<SesService>(SesService)
-    s3Service = module.get<S3Service>(S3Service)
+    service = module.get<SqsService>(SqsService)
   })
 
   it('should be defined', () => {

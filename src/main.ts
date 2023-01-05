@@ -2,12 +2,12 @@ import { NestFactory } from '@nestjs/core'
 import * as process from 'process'
 
 import { AppModule } from './app.module'
-import { SesService } from './emails/ses/ses.service'
+import { SqsService } from './emails/ses/sqs/sqs.service'
 
 async function bootstrap() {
   switch (process.env.AGRV) {
   case 'emails:ses':
-    await emailsSQSCommand()
+    await emailsSESCommand()
     break
 
   default:
@@ -17,11 +17,11 @@ async function bootstrap() {
 
 bootstrap()
 
-async function emailsSQSCommand(): Promise<void> {
+async function emailsSESCommand(): Promise<void> {
   const app = await NestFactory.createApplicationContext(AppModule)
 
-  const sesService = app.get<SesService>(SesService)
-  sesService.consume()
+  const sqsService = app.get<SqsService>(SqsService)
+  sqsService.consume()
 
   await app.close()
 }

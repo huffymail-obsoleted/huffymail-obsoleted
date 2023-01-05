@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { Consumer } from 'sqs-consumer'
-import { Message, SQSClient } from '@aws-sdk/client-sqs'
+import { Message } from '@aws-sdk/client-sqs'
 import { get } from 'lodash'
 import { simpleParser } from 'mailparser'
 
-import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { S3Service } from './s3/s3.service'
 
 declare type ParseMessageResult = {
   messageId: string
@@ -22,30 +21,10 @@ declare type ParseMessageResult = {
 
 @Injectable()
 export class SesService {
-  private s3: S3Client = new S3Client({
-    region: this.configService.get<string>('AWS_SES_REGION')
-  })
-
-  private sqs: SQSClient = new SQSClient({
-    region: this.configService.get<string>('AWS_SES_REGION')
-  })
-
-  constructor(private configService: ConfigService) {}
-
-  public consume() {
-    const consumer = Consumer.create({
-      queueUrl: this.configService.get<string>('AWS_SES_QUEUE_URL'),
-      sqs: this.sqs,
-      handleMessage: async (message: Message): Promise<void> => {
-        return this.handleMessage(message)
-      }
-    })
-
-    consumer.on('error', console.error)
-    consumer.on('processing_error', console.error)
-
-    consumer.start()
-  }
+  constructor(
+    private configService: ConfigService,
+    private s3Service: S3Service,
+  ) {}
 
   public async handleMessage(message: Message): Promise<void> {
     const bodyAsString = message.Body
@@ -73,7 +52,7 @@ export class SesService {
 
     const message = JSON.parse(messageAsString)
 
-    const objectAsString = await this.getObjectAsString(message.mail?.messageId)
+    const objectAsString = await this.s3Service.getObjectAsString(message.mail?.messageId)
     if (objectAsString === undefined) {
       throw new Error('object is undefined')
     }
@@ -92,16 +71,5 @@ export class SesService {
         date: get(object, 'date')
       }
     }
-  }
-
-  public async getObjectAsString(key: string): Promise<string | undefined> {
-    const { Body } = await this.s3.send(
-      new GetObjectCommand({
-        Bucket: this.configService.get<string>('AWS_SES_BUCKET'),
-        Key: key,
-      }),
-    )
-
-    return Body?.transformToString()
   }
 }
