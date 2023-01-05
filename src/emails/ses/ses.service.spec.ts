@@ -36,6 +36,21 @@ describe('SesService', () => {
     expect(service).toBeDefined()
   })
 
+  describe('handleMessage', () => {
+    it('should success', async () => {
+      const getObjectAsStringMock = jest.spyOn(s3Service, 'getObjectAsString')
+      getObjectAsStringMock.mockReturnValue(Promise.resolve(validMailAsString))
+
+      const createMock = jest.spyOn(emailsService, 'create')
+      createMock.mockReturnValue(Promise.resolve({} as Email))
+
+      await service.handleMessage(validMessage)
+
+      expect(getObjectAsStringMock).toBeCalled()
+      expect(createMock).toBeCalled()
+    })
+  })
+
   describe('parseMessage', () => {
     it('should returns with valid input', async () => {
       const getObjectAsStringMock = jest.spyOn(s3Service, 'getObjectAsString')

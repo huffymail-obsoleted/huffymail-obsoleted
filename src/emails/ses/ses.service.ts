@@ -41,7 +41,7 @@ export class SesService {
       html: parsedMessage.html
     })
 
-    this.logger.log(`handle message successfully: ${message.MessageId}`)
+    this.logger.log(`A message has been consumed successfully: ${message.MessageId}`)
 
     return
   }
