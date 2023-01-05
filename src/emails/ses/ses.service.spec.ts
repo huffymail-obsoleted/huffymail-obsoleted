@@ -1,12 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { ConfigModule } from '@nestjs/config'
 import { Message } from '@aws-sdk/client-sqs'
+import { getModelToken } from '@nestjs/sequelize'
 
 import { SesService } from './ses.service'
+import { EmailsService } from '../emails.service'
 import { S3Service } from './s3/s3.service'
+import { Email } from '../models/email.model'
 
 describe('SesService', () => {
   let service: SesService
+  let emailsService: EmailsService
   let s3Service: S3Service
 
   beforeEach(async () => {
@@ -14,16 +18,37 @@ describe('SesService', () => {
       imports: [ConfigModule],
       providers: [
         SesService,
-        S3Service
+        EmailsService,
+        S3Service,
+        {
+          provide: getModelToken(Email),
+          useValue: {},
+        }
       ],
     }).compile()
 
     service = module.get<SesService>(SesService)
+    emailsService = module.get<EmailsService>(EmailsService)
     s3Service = module.get<S3Service>(S3Service)
   })
 
   it('should be defined', () => {
     expect(service).toBeDefined()
+  })
+
+  describe('handleMessage', () => {
+    it('should success', async () => {
+      const getObjectAsStringMock = jest.spyOn(s3Service, 'getObjectAsString')
+      getObjectAsStringMock.mockReturnValue(Promise.resolve(validMailAsString))
+
+      const createMock = jest.spyOn(emailsService, 'create')
+      createMock.mockReturnValue(Promise.resolve({} as Email))
+
+      await service.handleMessage(validMessage)
+
+      expect(getObjectAsStringMock).toBeCalled()
+      expect(createMock).toBeCalled()
+    })
   })
 
   describe('parseMessage', () => {

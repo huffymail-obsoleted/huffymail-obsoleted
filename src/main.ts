@@ -21,7 +21,7 @@ async function emailsSESCommand(): Promise<void> {
   const app = await NestFactory.createApplicationContext(AppModule)
 
   const sqsService = app.get<SqsService>(SqsService)
-  sqsService.consume()
+  await sqsService.consume()
 
   await app.close()
 }

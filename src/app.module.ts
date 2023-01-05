@@ -1,13 +1,25 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule } from '@nestjs/config'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { Dialect } from 'sequelize/types/sequelize'
 
 import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { EmailsModule } from './emails/emails.module'
+import { SequelizeModule } from '@nestjs/sequelize'
 
 @Module({
   imports: [
     ConfigModule.forRoot(),
+    SequelizeModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        dialect: configService.get<Dialect>('DATABASE_DIALECT', 'mysql'),
+        uri: configService.get<string>('DATABASE_URI'),
+        autoLoadModels: true,
+        synchronize: configService.get<boolean>('DATABASE_SYNCHRONIZE', false)
+      }),
+      inject: [ConfigService]
+    }),
     EmailsModule
   ],
   controllers: [AppController],

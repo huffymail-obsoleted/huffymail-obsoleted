@@ -18,27 +18,31 @@ export class SqsService {
     private sesService: SesService,
   ) {}
 
-  public consume() {
-    const consumer = Consumer.create({
-      queueUrl: this.configService.get<string>('AWS_SES_QUEUE_URL'),
-      sqs: this.sqs,
-      handleMessage: async (message: Message): Promise<void> => {
-        return this.sesService.handleMessage(message)
-      }
-    })
-
-    consumer.on('error', error => {
-      this.logger.error(`sqs-consumer fired an "error" event: ${error.message}`, {
-        error: error,
+  public consume(): Promise<void> {
+    return new Promise(resolve => {
+      const consumer = Consumer.create({
+        queueUrl: this.configService.get<string>('AWS_SES_QUEUE_URL'),
+        sqs: this.sqs,
+        handleMessage: async (message: Message): Promise<void> => {
+          return this.sesService.handleMessage(message)
+        }
       })
-    })
 
-    consumer.on('processing_error', error => {
-      this.logger.error(`sqs-consumer fired a "processing_error" event: ${error.message}`, {
-        error: error,
+      consumer.on('error', error => {
+        this.logger.error(`sqs-consumer fired an "error" event: ${error.message}`, {
+          error: error,
+        })
       })
-    })
 
-    consumer.start()
+      consumer.on('processing_error', error => {
+        this.logger.error(`sqs-consumer fired a "processing_error" event: ${error.message}`, {
+          error: error,
+        })
+      })
+
+      consumer.on('stopped', resolve)
+
+      consumer.start()
+    })
   }
 }
