@@ -14,7 +14,9 @@ describe('EmailsService', () => {
         {
           provide: getModelToken(Email),
           useValue: {
-            create: jest.fn((values) => values)
+            create: jest.fn((values) => values),
+            findAll: jest.fn(() => []),
+            findOne: jest.fn(() => Email)
           },
         }
       ],
@@ -29,11 +31,21 @@ describe('EmailsService', () => {
 
   describe('create', () => {
     it('should returns', async () => {
-      const actual = await service.create({
+      expect(await service.create({
         id: 1
-      })
+      })).not.toBeUndefined()
+    })
+  })
 
-      expect(actual).not.toBeUndefined()
+  describe('findAll', () => {
+    it('should returns', async () => {
+      expect(await service.findAll()).not.toBeUndefined()
+    })
+  })
+
+  describe('findOne', () => {
+    it('should returns', async () => {
+      expect(await service.findOne()).not.toBeUndefined()
     })
   })
 })
