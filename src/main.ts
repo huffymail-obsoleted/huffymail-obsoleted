@@ -6,8 +6,8 @@ import { SqsService } from './emails/ses/sqs/sqs.service'
 
 async function bootstrap() {
   switch (process.env.AGRV) {
-  case 'emails:ses':
-    await emailsSESCommand()
+  case 'ses:consume':
+    await sesConsumeCommand()
     break
 
   default:
@@ -17,7 +17,7 @@ async function bootstrap() {
 
 bootstrap()
 
-async function emailsSESCommand(): Promise<void> {
+async function sesConsumeCommand(): Promise<void> {
   const app = await NestFactory.createApplicationContext(AppModule)
 
   const sqsService = app.get<SqsService>(SqsService)
@@ -28,5 +28,5 @@ async function emailsSESCommand(): Promise<void> {
 
 async function serveCommand(): Promise<void> {
   const app = await NestFactory.create(AppModule)
-  await app.listen(3000)
+  await app.listen(process.env.port || 3000)
 }
