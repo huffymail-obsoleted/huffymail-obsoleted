@@ -9,6 +9,7 @@ import { SqsService } from './ses/sqs/sqs.service'
 import { EmailsController } from './emails.controller'
 
 import { Email } from './models/email.model'
+import { PurgeExpiredService } from './jobs/purge-expired/purge-expired.service';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { Email } from './models/email.model'
     EmailsService,
     SesService,
     S3Service,
-    SqsService
+    SqsService,
+    PurgeExpiredService
   ],
   controllers: [EmailsController]
 })

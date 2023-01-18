@@ -16,7 +16,8 @@ describe('EmailsService', () => {
           useValue: {
             create: jest.fn((values) => values),
             findAll: jest.fn(() => []),
-            findOne: jest.fn(() => Email)
+            findOne: jest.fn(() => Email),
+            destroy: jest.fn(() => 0)
           },
         }
       ],
@@ -46,6 +47,12 @@ describe('EmailsService', () => {
   describe('findOne', () => {
     it('should returns', async () => {
       expect(await service.findOne()).not.toBeUndefined()
+    })
+  })
+
+  describe('destroy', () => {
+    it('should returns', async () => {
+      expect(await service.destroy()).not.toBeUndefined()
     })
   })
 })

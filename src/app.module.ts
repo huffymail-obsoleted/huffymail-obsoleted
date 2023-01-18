@@ -6,6 +6,7 @@ import { AppController } from './app.controller'
 import { AppService } from './app.service'
 import { EmailsModule } from './emails/emails.module'
 import { SequelizeModule } from '@nestjs/sequelize'
+import { CliModule } from './cli/cli.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { SequelizeModule } from '@nestjs/sequelize'
       }),
       inject: [ConfigService]
     }),
-    EmailsModule
+    EmailsModule,
+    CliModule
   ],
   controllers: [AppController],
   providers: [AppService],

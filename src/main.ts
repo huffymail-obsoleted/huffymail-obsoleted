@@ -3,9 +3,14 @@ import * as process from 'process'
 
 import { AppModule } from './app.module'
 import { SqsService } from './emails/ses/sqs/sqs.service'
+import { CliService } from './cli/cli.service'
 
 async function bootstrap() {
   switch (process.env.AGRV) {
+  case 'help':
+    await helpCommand()
+    break
+
   case 'ses:consume':
     await sesConsumeCommand()
     break
@@ -16,6 +21,15 @@ async function bootstrap() {
 }
 
 bootstrap()
+
+async function helpCommand(): Promise<void> {
+  const app = await NestFactory.createApplicationContext(AppModule)
+
+  const service = app.get<CliService>(CliService)
+  await service.help()
+
+  await app.close()
+}
 
 async function sesConsumeCommand(): Promise<void> {
   const app = await NestFactory.createApplicationContext(AppModule)

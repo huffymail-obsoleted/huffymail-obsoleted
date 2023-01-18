@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/sequelize'
-import { Attributes, CreateOptions, CreationAttributes, FindOptions } from 'sequelize'
+import { Attributes, CreateOptions, CreationAttributes, DestroyOptions, FindOptions } from 'sequelize'
 
 import { Email } from './models/email.model'
 
@@ -24,5 +24,9 @@ export class EmailsService {
 
   public async findOne(options?: FindOptions<Attributes<Email>>): Promise<Email | null> {
     return this.emailModel.findOne(options)
+  }
+
+  public async destroy(options?: DestroyOptions<Attributes<Email>>): Promise<number> {
+    return this.emailModel.destroy(options)
   }
 }
