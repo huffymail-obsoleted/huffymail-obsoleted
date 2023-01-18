@@ -9,7 +9,7 @@ import { SqsService } from './ses/sqs/sqs.service'
 import { EmailsController } from './emails.controller'
 
 import { Email } from './models/email.model'
-import { PurgeExpiredService } from './jobs/purge-expired/purge-expired.service';
+import { PurgeExpiredService } from './jobs/purge-expired/purge-expired.service'
 
 @Module({
   imports: [
@@ -23,6 +23,9 @@ import { PurgeExpiredService } from './jobs/purge-expired/purge-expired.service'
     SqsService,
     PurgeExpiredService
   ],
-  controllers: [EmailsController]
+  controllers: [EmailsController],
+  exports: [
+    SesService
+  ]
 })
 export class EmailsModule {}

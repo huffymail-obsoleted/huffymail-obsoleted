@@ -78,4 +78,8 @@ Nest is [MIT licensed](LICENSE).
 
 ```shell
 $ AGRV=help yarn start
+
+$ AGRV=consumeEmailReceivedEvents yarn start
+
+$ yarn start
 ```

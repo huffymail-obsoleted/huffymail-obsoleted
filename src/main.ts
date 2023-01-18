@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core'
 import * as process from 'process'
 
 import { AppModule } from './app.module'
-import { SqsService } from './emails/ses/sqs/sqs.service'
 import { CliService } from './cli/cli.service'
 
 async function bootstrap() {
@@ -11,8 +10,8 @@ async function bootstrap() {
     await helpCommand()
     break
 
-  case 'ses:consume':
-    await sesConsumeCommand()
+  case 'consumeEmailReceivedEvents':
+    await consumeEmailReceivedEventsCommand()
     break
 
   default:
@@ -26,16 +25,16 @@ async function helpCommand(): Promise<void> {
   const app = await NestFactory.createApplicationContext(AppModule)
 
   const service = app.get<CliService>(CliService)
-  await service.help()
+  await service.helpCommand()
 
   await app.close()
 }
 
-async function sesConsumeCommand(): Promise<void> {
+async function consumeEmailReceivedEventsCommand(): Promise<void> {
   const app = await NestFactory.createApplicationContext(AppModule)
 
-  const sqsService = app.get<SqsService>(SqsService)
-  await sqsService.consume()
+  const service = app.get<CliService>(CliService)
+  await service.consumeEmailReceivedEventsCommand()
 
   await app.close()
 }
