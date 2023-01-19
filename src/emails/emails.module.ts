@@ -5,11 +5,8 @@ import { SequelizeModule } from '@nestjs/sequelize'
 import { EmailsService } from './emails.service'
 import { SesService } from './ses/ses.service'
 import { S3Service } from './ses/s3/s3.service'
-import { SqsService } from './ses/sqs/sqs.service'
-import { EmailsController } from './emails.controller'
 
 import { Email } from './models/email.model'
-import { PurgeExpiredService } from './jobs/purge-expired/purge-expired.service'
 
 @Module({
   imports: [
@@ -19,13 +16,12 @@ import { PurgeExpiredService } from './jobs/purge-expired/purge-expired.service'
   providers: [
     EmailsService,
     SesService,
-    S3Service,
-    SqsService,
-    PurgeExpiredService
+    S3Service
   ],
-  controllers: [EmailsController],
   exports: [
     SesService
   ]
 })
-export class EmailsModule {}
+export class EmailsModule {
+  //
+}
