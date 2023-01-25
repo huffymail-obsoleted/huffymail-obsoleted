@@ -6,8 +6,8 @@ import { CliService } from './cli/cli.service'
 
 async function bootstrap() {
   switch (process.env.AGRV) {
-  case 'consumeEmailReceivedEvents':
-    await consumeEmailReceivedEventsCommand()
+  case 'emails:consume':
+    await emailsConsumeCommand()
     break
 
   case 'serve':
@@ -30,11 +30,11 @@ async function helpCommand(): Promise<void> {
   await app.close()
 }
 
-async function consumeEmailReceivedEventsCommand(): Promise<void> {
+async function emailsConsumeCommand(): Promise<void> {
   const app = await NestFactory.createApplicationContext(AppModule)
 
   const service = app.get<CliService>(CliService)
-  await service.consumeEmailReceivedEventsCommand()
+  await service.emailsConsumeCommand()
 
   await app.close()
 }

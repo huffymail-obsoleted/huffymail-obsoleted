@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { EmailsService } from './emails.service'
 import { getModelToken } from '@nestjs/sequelize'
+import { Test, TestingModule } from '@nestjs/testing'
 
+import { EmailsService } from './emails.service'
 import { Email } from './models/email.model'
 
 describe('EmailsService', () => {
@@ -18,9 +18,9 @@ describe('EmailsService', () => {
             findAll: jest.fn(() => []),
             findOne: jest.fn(() => Email),
             destroy: jest.fn(() => 0)
-          },
+          }
         }
-      ],
+      ]
     }).compile()
 
     service = module.get<EmailsService>(EmailsService)

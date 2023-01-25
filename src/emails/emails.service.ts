@@ -9,7 +9,9 @@ export class EmailsService {
   constructor(
     @InjectModel(Email)
     private emailModel: typeof Email
-  ) {}
+  ) {
+    //
+  }
 
   public async create(
     values: CreationAttributes<Email>,

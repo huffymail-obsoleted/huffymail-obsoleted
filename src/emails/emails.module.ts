@@ -3,10 +3,9 @@ import { ConfigModule } from '@nestjs/config'
 import { SequelizeModule } from '@nestjs/sequelize'
 
 import { EmailsService } from './emails.service'
+import { Email } from './models/email.model'
 import { S3Service } from './services/s3/s3.service'
 import { SesService } from './services/ses/ses.service'
-
-import { Email } from './models/email.model'
 
 @Module({
   imports: [

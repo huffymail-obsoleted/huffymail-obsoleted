@@ -1,7 +1,7 @@
+import { Message, SQSClient } from '@aws-sdk/client-sqs'
 import { Injectable, Logger } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Consumer } from 'sqs-consumer'
-import { Message, SQSClient } from '@aws-sdk/client-sqs'
 
 import { SesService } from '../emails/services/ses/ses.service'
 
@@ -20,7 +20,7 @@ export class CliService {
     this.logger.log('OK')
   }
 
-  public consumeEmailReceivedEventsCommand(): Promise<void> {
+  public emailsConsumeCommand(): Promise<void> {
     return new Promise(resolve => {
       const consumer = Consumer.create({
         queueUrl: this.configService.get<string>('AWS_SES_QUEUE_URL'),
