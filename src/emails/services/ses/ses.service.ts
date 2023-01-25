@@ -4,8 +4,8 @@ import { Message } from '@aws-sdk/client-sqs'
 import { ParsedMail, simpleParser } from 'mailparser'
 import { get } from 'lodash'
 
-import { S3Service } from './s3/s3.service'
-import { EmailsService } from '../emails.service'
+import { S3Service } from './../s3/s3.service'
+import { EmailsService } from '../../emails.service'
 
 declare type ParsedMessage = {
   messageId: string

@@ -6,16 +6,16 @@ import { CliService } from './cli/cli.service'
 
 async function bootstrap() {
   switch (process.env.AGRV) {
-  case 'help':
-    await helpCommand()
-    break
-
   case 'consumeEmailReceivedEvents':
     await consumeEmailReceivedEventsCommand()
     break
 
-  default:
+  case 'serve':
     await serveCommand()
+    break
+
+  default:
+    await helpCommand()
   }
 }
 

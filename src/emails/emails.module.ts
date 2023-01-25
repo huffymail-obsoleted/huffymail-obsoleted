@@ -3,8 +3,8 @@ import { ConfigModule } from '@nestjs/config'
 import { SequelizeModule } from '@nestjs/sequelize'
 
 import { EmailsService } from './emails.service'
-import { SesService } from './ses/ses.service'
-import { S3Service } from './ses/s3/s3.service'
+import { S3Service } from './services/s3/s3.service'
+import { SesService } from './services/ses/ses.service'
 
 import { Email } from './models/email.model'
 
@@ -15,8 +15,8 @@ import { Email } from './models/email.model'
   ],
   providers: [
     EmailsService,
-    SesService,
-    S3Service
+    S3Service,
+    SesService
   ],
   exports: [
     SesService

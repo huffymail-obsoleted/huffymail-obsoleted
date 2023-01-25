@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config'
 import { Consumer } from 'sqs-consumer'
 import { Message, SQSClient } from '@aws-sdk/client-sqs'
 
-import { SesService } from '../emails/ses/ses.service'
+import { SesService } from '../emails/services/ses/ses.service'
 
 @Injectable()
 export class CliService {
