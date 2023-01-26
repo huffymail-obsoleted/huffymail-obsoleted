@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/sequelize'
 import { Attributes, CreateOptions, CreationAttributes, DestroyOptions, FindOptions } from 'sequelize'
 
-import { Email } from './models/email.model'
+import { Email } from '../../models/email.model'
 
 @Injectable()
 export class EmailsService {

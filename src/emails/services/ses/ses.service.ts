@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config'
 import { get } from 'lodash'
 import { ParsedMail, simpleParser } from 'mailparser'
 
-import { EmailsService } from '../../emails.service'
+import { EmailsService } from '../emails/emails.service'
 import { S3Service } from '../s3/s3.service'
 
 declare type ParsedMessage = {
